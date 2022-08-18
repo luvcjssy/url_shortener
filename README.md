@@ -13,7 +13,7 @@
         - Build more with `expired` field to check the shortener url. We also have a cron tab to delete expired shortener urls
    
 - Web server scaling
-  - Add more servers and build load balancer to the request to web servers
+  - Add more servers and build load balancer to forward the request to web servers
   - Build cache server to reduce DB execution
 
 - Database scaling
