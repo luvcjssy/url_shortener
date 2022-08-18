@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener
+  contact:
+    email: nguyenhoan2510@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICESE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development environment
+tags:
+  - name: URL Shortener
+paths:
+  /encode:
+    post:
+      tags:
+        - URL Shortener
+      summary: Submit long url and return short url
+      requestBody:
+        $ref: "#/components/requestBodies/encodeBody"
+      responses:
+        200:
+          description: Encode long url.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/encodeSchema"
+        422:
+          $ref: "#/components/responses/unprocessableEntityEncode"
+  /decode:
+    post:
+      tags:
+        - URL Shortener
+      summary: Submit short url and return long url
+      requestBody:
+        $ref: "#/components/requestBodies/decodeBody"
+      responses:
+        200:
+          description: Decode short url.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/decodeSchema"
+        404:
+          $ref: "#/components/responses/recordNotFound"
+        422:
+          $ref: "#/components/responses/unprocessableEntityDecode"
+components:
+  responses:
+    recordNotFound:
+      description: Record not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: "Record not found"
+              errors:
+                type: object
+                properties:
+                  record_not_found:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "Record not found"
+    unprocessableEntityEncode:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Created failed"
+              success:
+                type: boolean
+                example: false
+              errors:
+                type: object
+                properties:
+                  long_url:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "Long url can't be blank"
+                      - "Long url is invalid"
+    unprocessableEntityDecode:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Short url is invalid
+              success:
+                type: boolean
+                example: false
+              errors:
+                type: object
+  requestBodies:
+    encodeBody:
+      description: |
+        A JSON object containing long url information.
+      content:
+        application/json:
+          schema:
+            required:
+              - long_url
+            type: object
+            properties:
+              long_url:
+                type: string
+                example: "https://oivan.com"
+      required: true
+    decodeBody:
+      description: |
+        A JSON object containing short url information.
+      content:
+        application/json:
+          schema:
+            required:
+              - short_url
+            type: object
+            properties:
+              short_url:
+                type: string
+                example: "http://short.est/6KzibOz"
+      required: true
+  schemas:
+    encodeSchema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Created successfully or Url is existed
+        data:
+          type: object
+          properties:
+            short_url:
+              type: string
+              example: http://short.est/6KzibOz
+    decodeSchema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Url is found
+        data:
+          type: object
+          properties:
+            long_url:
+              type: string
+              example: http://oivan.com
